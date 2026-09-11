@@ -1,3 +1,4 @@
+
 all USERNAMEs
 
 
@@ -13,3 +14,8 @@ Telegram:	ifardinami
 WhatsApp:  	ifardinami   ; me.fardin (P)
 
 LinkedIn:	iamfardin
+
+
+MAILs
+Personal: 	ifardinami@gmail.com
+Official:	ext.fardin.rahman@bracu.ac.bd
