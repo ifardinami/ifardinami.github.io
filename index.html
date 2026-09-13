@@ -390,18 +390,53 @@
 
 
     <!-- Contact Section -->
-    <section id="contact" class="contact section">
+<section id="contact" class="contact section">
+
+  <style>
+    .contact-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 12px;
+      padding: 12px 24px;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #4d55eb, #6c63ff);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 8px 20px rgba(77, 85, 235, 0.22);
+      transition: all 0.25s ease;
+    }
+
+    .contact-link-btn:hover {
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px rgba(77, 85, 235, 0.35);
+    }
+
+    .contact-link-btn i {
+      font-size: 18px;
+    }
+  </style>
+
   <!-- Section Title -->
   <div class="container section-title" data-aos="fade-up">
     <h2>Contact</h2>
 
-    <p>
-      <a href="https://ifardinami.github.io/usernames" target="_blank" rel="noopener noreferrer">
-        https://ifardinami.github.io/usernames
-      </a>
-    </p>
+    <a
+      href="https://ifardinami.github.io/usernames"
+      class="contact-link-btn"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <i class="bi bi-link-45deg"></i>
+      All Contact Details
+      <i class="bi bi-arrow-up-right"></i>
+    </a>
 
   </div><!-- End Section Title -->
+
 </section>
 
     
