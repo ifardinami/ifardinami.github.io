@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wire It Up — Singly Linked List Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e7ecf4;
+    --bg-tint:#dde5f0;
+    --panel:#ffffff;
+    --panel-2:#f3f6fb;
+    --ink:#16202c;
+    --ink-soft:#516074;
+    --line:#c4d0e0;
+    --wire:#2b6cf6;
+    --wire-deep:#163e95;
+    --wire-bg:#e7f0ff;
+    --data-ink:#9a4d05;
+    --data-bg:#fff1dd;
+    --ok:#0f8a5f;
+    --ok-bg:#e2f6ec;
+    --bad:#cf3b27;
+    --bad-bg:#fdeae6;
+    --dummy:#6d4bd1;
+    --dummy-bg:#efe9fd;
+    --slate:#0f1822;
+    --display:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
+    --body:'Inter',ui-sans-serif,system-ui,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink); font-family:var(--body);
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(var(--line) 1px, transparent 1px);
+    background-size:26px 26px;
+  }
+  a{color:var(--wire-deep);}
+  /* ---------- top nav ---------- */
+  header.bar{
+    position:sticky; top:0; z-index:40;
+    background:rgba(231,236,244,.86); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .bar-in{max-width:1080px; margin:0 auto; padding:10px 18px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .brand{font-family:var(--display); font-weight:700; letter-spacing:-.01em; font-size:17px; display:flex; align-items:center; gap:9px; white-space:nowrap;}
+  .brand .glyph{display:inline-flex; align-items:center; gap:3px;}
+  .brand .b{width:16px; height:13px; border:2px solid var(--ink); border-radius:3px; background:var(--data-bg);}
+  .brand .w{width:14px; height:2px; background:var(--wire); position:relative;}
+  .brand .w::after{content:''; position:absolute; right:-1px; top:-3px; border:4px solid transparent; border-left:6px solid var(--wire);}
+  nav.pills{display:flex; gap:6px; flex-wrap:wrap; margin-left:auto;}
+  nav.pills a{
+    font-size:12.5px; font-weight:600; text-decoration:none; color:var(--ink-soft);
+    padding:6px 11px; border-radius:999px; border:1px solid transparent; white-space:nowrap;
+  }
+  nav.pills a:hover{background:var(--panel); border-color:var(--line);}
+  nav.pills a.active{background:var(--ink); color:#fff;}
+  /* ---------- layout ---------- */
+  main{max-width:1080px; margin:0 auto; padding:0 18px 90px;}
+  section{padding:54px 0 8px; scroll-margin-top:74px;}
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--wire-deep); font-weight:700; display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:''; width:26px; height:2px; background:var(--wire);}
+  h2.title{font-family:var(--display); font-weight:700; font-size:clamp(26px,4.2vw,40px); letter-spacing:-.02em; margin:10px 0 6px;}
+  .lede{color:var(--ink-soft); max-width:62ch; font-size:16px;}
+  p{max-width:68ch;}
+  .small{font-size:14px;}
+  /* ---------- hero ---------- */
+  .hero{
+    background:var(--slate); color:#eaf1fb; border-radius:22px; padding:38px clamp(20px,5vw,52px);
+    margin-top:22px; position:relative; overflow:hidden;
+    box-shadow:0 24px 50px -28px rgba(15,24,34,.7);
+  }
+  .hero::before{
+    content:''; position:absolute; inset:0; opacity:.5;
+    background-image:linear-gradient(rgba(120,150,210,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(120,150,210,.10) 1px,transparent 1px);
+    background-size:30px 30px; mask-image:radial-gradient(120% 100% at 80% 0%, #000 30%, transparent 75%);
+  }
+  .hero > *{position:relative;}
+  .hero .kick{font-family:var(--mono); font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:#7fb0ff;}
+  .hero h1{font-family:var(--display); font-weight:700; font-size:clamp(30px,6vw,58px); line-height:1.02; letter-spacing:-.03em; margin:14px 0 0;}
+  .hero h1 em{font-style:normal; color:#ffb866;}
+  .hero p{color:#aebfd6; max-width:54ch; margin-top:14px; font-size:16px;}
+  .hero-demo{margin-top:30px; overflow-x:auto; padding-bottom:6px;}
+  .hero .tagrow{display:flex; gap:8px; flex-wrap:wrap; margin-top:26px;}
+  .tag{font-family:var(--mono); font-size:11.5px; color:#cdd9ec; border:1px solid rgba(150,180,230,.3); border-radius:999px; padding:5px 11px;}
+  /* ---------- cards / panels ---------- */
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px; margin-top:20px;}
+  .grid2{display:grid; grid-template-columns:1fr; gap:18px;}
+  @media(min-width:880px){ .grid2{grid-template-columns:0.95fr 1.05fr;} }
+  .note{
+    border-left:4px solid var(--wire); background:var(--panel-2); border-radius:0 10px 10px 0;
+    padding:12px 16px; font-size:14.5px; color:var(--ink-soft); margin-top:16px;
+  }
+  .note b{color:var(--ink);}
+  .note.warn{border-left-color:var(--bad); background:var(--bad-bg);}
+  .note.tip{border-left-color:var(--ok); background:var(--ok-bg);}
+  /* ---------- legend ---------- */
+  .legend{display:flex; gap:18px; flex-wrap:wrap; align-items:center; margin-top:6px;}
+  .legend .item{display:flex; align-items:center; gap:9px; font-size:13px; color:var(--ink-soft);}
+  /* ---------- node visual ---------- */
+  .ll-block{margin-bottom:6px;}
+  .ll-label{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 4px 2px;}
+  .ll-row{display:flex; align-items:flex-start; min-height:120px;}
+  .col{display:flex; flex-direction:column; align-items:center;}
+  .rail{height:48px; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; gap:3px;}
+  .flagwrap{display:flex; gap:4px; align-items:flex-end;}
+  .flag{font-family:var(--mono); font-size:11px; font-weight:700; color:#fff; background:var(--wire); padding:2px 7px; border-radius:6px; line-height:1.4;}
+  .flag.head{background:var(--ink);}
+  .flag.temp{background:var(--wire);}
+  .flag.cur{background:#0b8f86;}
+  .flag.p,.flag.newNode{background:var(--dummy);}
+  .ptr{color:var(--ink); font-size:18px; line-height:1; margin-top:-1px;}
+  .body{height:66px; display:flex; align-items:center;}
+  .sub{height:20px; font-family:var(--mono); font-size:12px; color:var(--ink-soft); display:flex; align-items:flex-start; padding-top:2px;}
+  .node{display:flex; border:2px solid var(--ink); border-radius:11px; overflow:hidden; background:var(--panel); box-shadow:2px 3px 0 rgba(20,30,45,.13); transition:transform .18s, box-shadow .18s;}
+  .node .cell{display:flex; align-items:center; justify-content:center; height:56px;}
+  .node .elem{min-width:50px; padding:0 12px; background:var(--data-bg); color:var(--data-ink); font-family:var(--mono); font-weight:700; font-size:16px;}
+  .node .next{width:30px; background:var(--wire-bg); border-left:2px solid var(--ink); color:var(--wire-deep); font-size:14px; font-weight:700;}
+  .node .next .dot{width:9px; height:9px; border-radius:50%; background:var(--wire);}
+  .node.hl{outline:3px solid var(--wire); outline-offset:3px; transform:translateY(-2px);}
+  .node.t-new{border-color:var(--ok);}
+  .node.t-new .elem{background:var(--ok-bg); color:#0a6b48;}
+  .node.t-new .next{border-left-color:var(--ok);}
+  .node.t-new.hl{outline-color:var(--ok);}
+  .node.t-dummy{border-style:dashed; border-color:var(--dummy);}
+  .node.t-dummy .elem{background:var(--dummy-bg); color:var(--dummy); font-style:italic;}
+  .node.t-dummy .next{border-left-color:var(--dummy); background:var(--dummy-bg);}
+  .node.t-dim{opacity:.4; filter:grayscale(.6);}
+  .node .next.lbl{width:auto; padding:0 9px; font-family:var(--mono); font-size:12px; font-weight:600; font-style:italic;}
+  .arrow{width:52px; justify-content:center;}
+  .arrow .ln{width:34px; height:3px; background:var(--wire); border-radius:2px; position:relative;}
+  .arrow .hd{width:0; height:0; border-top:6px solid transparent; border-bottom:6px solid transparent; border-left:10px solid var(--wire); margin-left:-1px;}
+  .arrow.dim .ln,.arrow.dim .hd{opacity:.35;}
+  .nullchip .body{height:66px;}
+  .nullchip .chip{font-family:var(--mono); font-size:13px; font-weight:700; color:var(--ink-soft); border:2px dashed var(--line); border-radius:8px; padding:6px 10px; background:var(--panel-2);}
+  .voidcell .chip{font-family:var(--mono); font-size:16px; color:var(--ink-soft);}
+  .gap{width:26px;}
+  /* hero ambient pulse */
+  .pulse{position:absolute; top:50%; left:0; width:7px; height:7px; border-radius:50%; background:#ffd9a8; box-shadow:0 0 8px 2px rgba(255,200,140,.7); transform:translateY(-50%); animation:travel 2.6s linear infinite;}
+  @keyframes travel{0%{left:-4px; opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{left:34px; opacity:0;}}
+  .hero .node{box-shadow:none; border-color:#cdd9ec; background:#1b2738;}
+  .hero .node .elem{background:#243349; color:#ffce9b;}
+  .hero .node .next{background:#1f2e42; border-left-color:#cdd9ec; color:#9bc0ff;}
+  .hero .node .next .dot{background:#7fb0ff;}
+  .hero .arrow .ln{background:#5b7fc0;}
+  .hero .arrow .hd{border-left-color:#5b7fc0;}
+  .hero .nullchip .chip{color:#9bb0cf; border-color:#3a4a63; background:#1b2738;}
+  .hero .flag.head{background:#ffb866; color:#1b2738;}
+  .hero .ptr{color:#9bb0cf;}
+  /* ---------- stepper viz ---------- */
+  .viz{margin-top:18px;}
+  .viz .stage{
+    background:linear-gradient(180deg,var(--panel),var(--panel-2));
+    border:1px solid var(--line); border-radius:14px; padding:18px 16px 8px;
+    overflow-x:auto;
+  }
+  .viz .stage .pad{min-width:max-content;}
+  .caption{min-height:48px; padding:12px 14px; margin-top:10px; background:var(--panel); border:1px solid var(--line); border-radius:10px; font-size:14.5px; display:flex; gap:10px; align-items:flex-start;}
+  .caption .num{font-family:var(--mono); font-weight:700; color:#fff; background:var(--wire); border-radius:6px; padding:1px 8px; font-size:12px; flex:none; margin-top:2px;}
+  .caption .verdict{margin-left:auto; font-family:var(--mono); font-weight:700; padding:3px 10px; border-radius:8px; align-self:center; flex:none;}
+  .verdict.true{background:var(--ok-bg); color:var(--ok);}
+  .verdict.false{background:var(--bad-bg); color:var(--bad);}
+  .verdict.err{background:var(--bad-bg); color:var(--bad);}
+  /* controls */
+  .controls{display:flex; align-items:center; gap:8px; margin-top:12px; flex-wrap:wrap;}
+  .btn{font-family:var(--body); font-weight:600; font-size:14px; border:1px solid var(--line); background:var(--panel); color:var(--ink); border-radius:9px; padding:8px 14px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;}
+  .btn:hover{border-color:var(--wire); color:var(--wire-deep);}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+  .btn.primary{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .btn.primary:hover{background:var(--wire); border-color:var(--wire); color:#fff;}
+  .stepcount{font-family:var(--mono); font-size:13px; color:var(--ink-soft); margin-left:auto;}
+  .progress{height:5px; background:var(--bg-tint); border-radius:999px; overflow:hidden; margin-top:10px;}
+  .progress .fill{height:100%; background:var(--wire); width:0; transition:width .2s;}
+  /* pseudo code — themeable (dark default / white toggle) */
+  .code{
+    /* dark token palette */
+    --c-bg:#0f1822; --c-text:#e2ecf9; --c-gutter:#5d7494; --c-border:#26344a;
+    --c-ttl:#9cc4ff; --c-on:rgba(127,176,255,.18); --c-accent:#ffb866;
+    --c-cm:#8aa0c0; --c-kw:#ff8fb4; --c-fn:#5fe3bf; --c-ty:#ffd479; --c-nu:#c2a5ff; --c-cn:#ff9d6b;
+    background:var(--c-bg); color:var(--c-text);
+    border:1px solid var(--c-border);
+    border-radius:14px; padding:0 4px 16px 0; overflow:hidden;
+    font-family:'Fira Code',var(--mono); font-size:14px; font-weight:500;
+    font-feature-settings:'liga' 1,'calt' 1; letter-spacing:.1px;
+    transition:background .25s, color .25s, border-color .25s;
+  }
+  body.code-light .code{
+    /* light token palette */
+    --c-bg:#ffffff; --c-text:#1d2734; --c-gutter:#aab6c8; --c-border:#d3dded;
+    --c-ttl:#2b6cf6; --c-on:rgba(43,108,246,.10); --c-accent:#2b6cf6;
+    --c-cm:#8a94a6; --c-kw:#c2256e; --c-fn:#0a7d57; --c-ty:#b45309; --c-nu:#6d28d9; --c-cn:#c2410c;
+    box-shadow:0 8px 24px -16px rgba(20,30,45,.35);
+  }
+  .code .ttl{
+    display:flex; align-items:center; gap:10px;
+    color:var(--c-ttl); padding:11px 14px 11px 18px; font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; font-weight:700; border-bottom:1px solid var(--c-border); margin-bottom:8px;
+    background:linear-gradient(90deg, color-mix(in srgb, var(--c-accent) 12%, transparent), transparent);
+  }
+  .code .ttl .ttl-name{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .code-toggle{
+    flex:none; cursor:pointer; font-family:'Fira Code',var(--mono); font-size:11px; font-weight:700;
+    letter-spacing:.05em; text-transform:none; padding:4px 10px; border-radius:999px;
+    color:var(--c-text); background:color-mix(in srgb, var(--c-text) 10%, transparent);
+    border:1px solid var(--c-border);
+  }
+  .code-toggle:hover{border-color:var(--c-accent); color:var(--c-accent);}
+  .code .cl{display:block; padding:2px 18px 2px 56px; position:relative; white-space:pre; transition:background .15s;}
+  .code .cl::before{content:attr(data-n); position:absolute; left:0; width:42px; text-align:right; color:var(--c-gutter); font-size:12px; font-weight:400;}
+  .code .cl.on{background:var(--c-on); box-shadow:inset 3px 0 0 var(--c-accent);}
+  .code .cm{color:var(--c-cm); font-style:italic;}
+  .code .kw{color:var(--c-kw); font-weight:700;}
+  .code .fn{color:var(--c-fn); font-weight:700;}
+  .code .ty{color:var(--c-ty); font-weight:600;}
+  .code .nu{color:var(--c-nu); font-weight:600;}
+  .code .cn{color:var(--c-cn); font-weight:700;}
+  /* method / case selector */
+  .selector{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:6px;}
+  .selector button{font-family:var(--mono); font-size:12.5px; font-weight:600; border:1px solid var(--line); background:var(--panel); color:var(--ink-soft); padding:7px 12px; border-radius:9px; cursor:pointer;}
+  .selector button.active{background:var(--wire); border-color:var(--wire); color:#fff;}
+  .selector button:hover:not(.active){border-color:var(--wire);}
+  /* tables */
+  .io{width:100%; border-collapse:collapse; margin-top:14px; font-size:14px;}
+  .io th,.io td{border:1px solid var(--line); padding:9px 12px; text-align:left;}
+  .io th{background:var(--panel-2); font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft);}
+  .io td .mono{font-family:var(--mono);}
+  .io td.ok{color:var(--ok); font-weight:700; font-family:var(--mono);}
+  .io td.bad{color:var(--bad); font-weight:700; font-family:var(--mono);}
+  footer{max-width:1080px; margin:0 auto; padding:30px 18px 50px; color:var(--ink-soft); font-size:13.5px; border-top:1px solid var(--line);}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    .pulse{animation:none; display:none;}
+    .node{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-in">
+    <div class="brand">
+      <span class="glyph"><span class="b"></span><span class="w"></span><span class="b"></span></span>
+      Wire It Up
+    </div>
+    <nav class="pills" id="nav">
+      <a href="#home">Start</a>
+      <a href="#basics">Node basics</a>
+      <a href="#intro-task">Intro trace</a>
+      <a href="#methods">List methods</a>
+      <a href="#conga">Task 1 · Conga</a>
+      <a href="#decoder">Task 2 · Decoder</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ===================== HERO ===================== -->
+  <section id="home" style="padding-top:26px;">
+    <div class="hero">
+      <div class="kick">Data Structures · Lab 2 · Singly Linked List</div>
+      <h1>A list is just<br>boxes holding <em>wires</em>.</h1>
+      <p>Each node carries a value and a single wire to the next node. Follow the wires from <b>head</b> and you can reach the whole list. Step through every idea below and watch the pointers move.</p>
+      <div class="hero-demo" id="heroDemo"></div>
+      <div class="tagrow">
+        <span class="tag">elem · the value</span>
+        <span class="tag">next · the wire</span>
+        <span class="tag">head · the entry point</span>
+        <span class="tag">null · the end</span>
+      </div>
+    </div>
+    <div class="note tip" style="margin-top:22px;">
+      <b>How to use this page.</b> Each topic has a <b>pseudo-code panel</b> (Java-flavoured, not meant to compile) and a <b>stepper</b>. Press <b>Next</b> to advance one step — the running line lights up while the nodes and pointer flags move to match. Solutions for the lab tasks are shown as <b>pseudo-code only</b>, so the actual coding is still yours to do.
+    </div>
+  </section>
+
+  <!-- ===================== NODE BASICS ===================== -->
+  <section id="basics">
+    <div class="eyebrow">Foundation · start here</div>
+    <h2 class="title">First the class, then the objects, then the wires</h2>
+    <p class="lede">Everything starts with one idea in this exact order: define the <b>class</b> (the blueprint), build <b>objects</b> from it, then write the <b>lines that connect</b> those objects. Step through it on the right.</p>
+
+    <div class="grid2">
+      <div>
+        <div class="note">
+          <b>Class vs. object.</b> A <span class="mono">class</span> is a blueprint — it describes the shape of a node but is not itself a usable node. Each time you write <span class="mono">new Node(...)</span> you stamp out one real <b>object</b> in memory that follows that blueprint. The class is written once; objects are made many times.
+        </div>
+        <div class="note tip">
+          <b>Connecting is just assignment.</b> Two objects become a chain the moment you set one object's <span class="mono">next</span> field to point at another: <span class="mono">n1.next = n2</span>. No special command — wiring a linked list is only a series of these assignments.
+        </div>
+        <div class="legend">
+          <span class="item"><span class="node t-dummy" style="transform:scale(.6); transform-origin:left;"><span class="cell elem">elem</span><span class="cell next lbl">next</span></span> blueprint</span>
+          <span class="item"><span class="node t-new" style="transform:scale(.6); transform-origin:left;"><span class="cell elem">7</span><span class="cell next">∅</span></span> new object</span>
+          <span class="item"><span class="flag head">head</span> entry pointer</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="code" id="basics-code"></div>
+        <div class="viz" id="basics-viz"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== INTRO TRACE TASK ===================== -->
+  <section id="intro-task">
+    <div class="eyebrow">Intro Lab Task</div>
+    <h2 class="title">Trace the 5 nodes — and spot the traps</h2>
+    <p class="lede">This task wires five nodes exactly as the lab illustration shows, then runs a list of statements. Some print values, some print object addresses, and some are deliberate <b>errors</b>. Step through each line to see what really happens.</p>
+
+    <div class="panel">
+      <div class="ll-label">The wiring from the illustration</div>
+      <div id="introDiagram" style="overflow-x:auto;"></div>
+      <div class="code" style="margin-top:14px;">
+        <div class="ttl"><span class="ttl-name">The connections being built</span><button class="code-toggle" onclick="toggleCodeTheme()"></button></div>
+        <span class="cl" data-n="1">n1.next = n5;   <span class="cm">// Hello → Java</span></span>
+        <span class="cl" data-n="2">n5.next = n2;   <span class="cm">// Java  → 324</span></span>
+        <span class="cl" data-n="3">n2.next = n3;   <span class="cm">// 324   → 8.97</span></span>
+        <span class="cl" data-n="4">n3.next = n1;   <span class="cm">// 8.97  → Hello   (this makes a loop!)</span></span>
+        <span class="cl" data-n="5">n4.next = n5;   <span class="cm">// Python→ Java    (feeds into the loop)</span></span>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div>
+        <div class="code" id="intro-code"></div>
+      </div>
+      <div>
+        <div class="viz" id="intro-viz"></div>
+      </div>
+    </div>
+    <div class="note warn">
+      <b>Why the compile errors matter.</b> In Java the two type errors (adding two <span class="mono">Node</span> objects, and assigning <span class="mono">532</span> to a <span class="mono">Node</span> field) stop the <i>whole</i> program from compiling — so test each tricky line on its own. Python is dynamically typed, so those same lines run and fail later in different ways. That is exactly why the lab says <i>"Java &amp; Python output won't always be the same."</i>
+    </div>
+  </section>
+
+  <!-- ===================== LIST METHODS ===================== -->
+  <section id="methods">
+    <div class="eyebrow">Intro Linked List · Design the class</div>
+    <h2 class="title">The six core list operations</h2>
+    <p class="lede">A <b>LinkedList</b> wraps a single <span class="mono">head</span> reference and offers operations on top of it. Pick a method to see its pseudo-code and watch a <span class="mono">temp</span> pointer do the walking.</p>
+
+    <div class="selector" id="methodSel"></div>
+    <div class="grid2">
+      <div><div class="code" id="methods-code"></div></div>
+      <div><div class="viz" id="methods-viz"></div></div>
+    </div>
+    <div class="note">
+      <b>The walking pattern.</b> Almost every method uses a borrowed pointer (often called <span class="mono">temp</span>) so the real <span class="mono">head</span> never gets lost. Loop while <span class="mono">temp != null</span> to visit every node; loop while <span class="mono">temp.next != null</span> to stop <i>on</i> the last node; loop while <span class="mono">temp.next.next != null</span> to stop on the second-to-last.
+    </div>
+  </section>
+
+  <!-- ===================== TASK 1 CONGA ===================== -->
+  <section id="conga">
+    <div class="eyebrow">Lab Task 1</div>
+    <h2 class="title">Assemble the Conga Line</h2>
+    <p class="lede">You are the choreographer. Walk the line once and check that every dancer's age is not greater than the dancer in front. The moment one pair breaks the order, return <span class="mono">false</span>. Survive to the end and return <span class="mono">true</span>.</p>
+
+    <table class="io">
+      <tr><th>Sample input (ages)</th><th>Expected</th></tr>
+      <tr><td class="mono">10 → 15 → 34 → 41 → 56 → 72</td><td class="ok">true</td></tr>
+      <tr><td class="mono">10 → 15 → 44 → 41 → 56 → 72</td><td class="bad">false</td></tr>
+    </table>
+
+    <div class="grid2" style="margin-top:18px;">
+      <div><div class="code" id="conga-code"></div></div>
+      <div>
+        <div class="selector" id="congaSel"></div>
+        <div class="viz" id="conga-viz"></div>
+      </div>
+    </div>
+    <div class="note tip">
+      <b>Single-pass, no extra structure.</b> You never build a second list — you only compare each node with its neighbour. The constraint "you cannot use any other data structure" is satisfied because you walk the existing list once with one pointer.
+    </div>
+  </section>
+
+  <!-- ===================== TASK 2 DECODER ===================== -->
+  <section id="decoder">
+    <div class="eyebrow">Lab Task 2</div>
+    <h2 class="title">The Word Decoder</h2>
+    <p class="lede">Measure the list, compute <span class="mono">step = 13 % length</span>, then keep the letters whose position is a non-zero multiple of <span class="mono">step</span>. Because the message is stored backwards, push each kept letter to the <b>front</b> of a dummy-headed list — that reverses it for free.</p>
+
+    <table class="io">
+      <tr><th>Encoded</th><th>length &amp; step</th><th>kept positions</th><th>decoded</th></tr>
+      <tr><td class="mono">B M D T N O A P S C</td><td class="mono">10, 13%10=3</td><td class="mono">3,6,9 → T,A,C</td><td class="ok">null → C → A → T</td></tr>
+      <tr><td class="mono">Z O T N X</td><td class="mono">5, 13%5=3</td><td class="mono">3 → N</td><td class="ok">null → N</td></tr>
+    </table>
+
+    <div class="grid2" style="margin-top:18px;">
+      <div><div class="code" id="decoder-code"></div></div>
+      <div>
+        <div class="selector" id="decoderSel"></div>
+        <div class="viz" id="decoder-viz"></div>
+      </div>
+    </div>
+    <div class="note">
+      <b>What is a dummy head?</b> A node whose <span class="mono">elem</span> is <span class="mono">null</span>, sitting in front of the real data. It gives you a fixed handle to attach new nodes to, so "insert at the front" is always just <span class="mono">newNode.next = dummy.next; dummy.next = newNode;</span> — and that front-insertion is what flips the word into the right order.
+    </div>
+  </section>
+</main>
+
+<footer>
+  Built to visualise the Lab 2 (Node &amp; LinkedList) tasks. Pseudo-code is intentionally not compilable Java — translate it into your own working code for submission. Nodes, wires, and pointer flags update live as you step.
+</footer>
+
+<script>
+/* ============================================================
+   Rendering core: draw a list of nodes + pointer flags
+   ============================================================ */
+function el(tag, cls, html){
+  const d=document.createElement(tag);
+  if(cls) d.className=cls;
+  if(html!=null) d.innerHTML=html;
+  return d;
+}
+
+function makeNodeCol(nd, pointers, idx){
+  const col=el('div','col');
+
+  // rail (pointer flags)
+  const rail=el('div','rail');
+  const flags=(pointers||[]).filter(p=>p.i===idx);
+  if(flags.length){
+    const fw=el('div','flagwrap');
+    flags.forEach(p=> fw.appendChild(el('span','flag '+(p.name||'temp'), p.label||p.name)));
+    rail.appendChild(fw);
+    rail.appendChild(el('div','ptr','↓'));
+  }
+  col.appendChild(rail);
+
+  // body (the node card)
+  const body=el('div','body');
+  const node=el('div','node '+(nd.t?('t-'+nd.t):'')+(nd.hl?' hl':''));
+  node.appendChild(el('div','cell elem', String(nd.e)));
+  const next=el('div','cell next');
+  if(nd.nx!=null){ next.classList.add('lbl'); next.innerHTML=nd.nx; }
+  else if(nd.link==='none'){ next.innerHTML='∅'; }
+  else { next.appendChild(el('span','dot')); }
+  node.appendChild(next);
+  body.appendChild(node);
+  col.appendChild(body);
+
+  // sub label (e.g. index)
+  const sub=el('div','sub', nd.sub!=null?('['+nd.sub+']'):'');
+  col.appendChild(sub);
+  return col;
+}
+function makeArrowCol(dim){
+  const col=el('div','col');
+  col.appendChild(el('div','rail'));
+  const body=el('div','body arrow'+(dim?' dim':''));
+  body.appendChild(el('span','ln'));
+  body.appendChild(el('span','hd'));
+  col.appendChild(body);
+  col.appendChild(el('div','sub'));
+  return col;
+}
+function makeNullCol(){
+  const col=el('div','col nullchip');
+  col.appendChild(el('div','rail'));
+  const body=el('div','body');
+  body.appendChild(el('span','chip','null'));
+  col.appendChild(body);
+  col.appendChild(el('div','sub'));
+  return col;
+}
+function makeGapCol(){
+  const col=el('div','col gap');
+  col.appendChild(el('div','rail'));
+  col.appendChild(el('div','body'));
+  col.appendChild(el('div','sub'));
+  return col;
+}
+
+function renderRow(rowData){
+  const block=el('div','ll-block');
+  if(rowData.label) block.appendChild(el('div','ll-label', rowData.label));
+  const row=el('div','ll-row');
+  const nodes=rowData.nodes||[];
+  nodes.forEach((nd,i)=>{
+    row.appendChild(makeNodeCol(nd, rowData.pointers, i));
+    const link=nd.link||(i<nodes.length-1?'arrow':'null');
+    if(link==='arrow'){ row.appendChild(makeArrowCol()); }
+    else if(link==='null'){ row.appendChild(makeArrowCol(true)); row.appendChild(makeNullCol()); }
+    else if(link==='none'){ if(i<nodes.length-1) row.appendChild(makeGapCol()); }
+  });
+  block.appendChild(row);
+  return block;
+}
+
+function renderStage(stageInner, frame){
+  stageInner.innerHTML='';
+  (frame.rows||[]).forEach(r=> stageInner.appendChild(renderRow(r)));
+}
+
+/* ---- code-block theme toggle (dark / white background) ---- */
+function toggleCodeTheme(){
+  document.body.classList.toggle('code-light');
+  syncCodeToggles();
+}
+function syncCodeToggles(){
+  const light=document.body.classList.contains('code-light');
+  document.querySelectorAll('.code-toggle').forEach(b=>{
+    b.textContent = light ? '◑ Dark bg' : '◐ White bg';
+    b.title = light ? 'Switch code blocks to a dark background' : 'Switch code blocks to a white background';
+  });
+}
+
+/* ---- lightweight syntax enhancer: colours numbers, types, constants ---- */
+function tokenizeText(text){
+  const frag=document.createDocumentFragment();
+  const re=/(\b\d+\.?\d*\b)|(\b(?:Node|Object)\b)|(\b(?:null|true|false)\b)/g;
+  let last=0,m;
+  while((m=re.exec(text))){
+    if(m.index>last) frag.appendChild(document.createTextNode(text.slice(last,m.index)));
+    const span=document.createElement('span');
+    span.textContent=m[0];
+    span.className = m[1] ? 'nu' : m[2] ? 'ty' : 'cn';
+    frag.appendChild(span);
+    last=re.lastIndex;
+  }
+  if(last<text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+  return frag;
+}
+function enhanceCode(codeEl){
+  codeEl.querySelectorAll('.cl').forEach(cl=>{
+    if(cl.dataset.enh) return;
+    cl.dataset.enh='1';
+    [...cl.childNodes].forEach(node=>{
+      if(node.nodeType===3) node.replaceWith(tokenizeText(node.nodeValue));
+    });
+  });
+}
+
+/* build a title bar with a name + the white/dark toggle */
+function titleBar(title){
+  const ttl=el('div','ttl');
+  ttl.appendChild(el('span','ttl-name', title));
+  const tg=el('button','code-toggle');
+  tg.onclick=toggleCodeTheme;
+  ttl.appendChild(tg);
+  return ttl;
+}
+
+/* highlight pseudo-code lines */
+function highlightCode(codeEl, line){
+  const lines=Array.isArray(line)?line:(line==null?[]:[line]);
+  codeEl.querySelectorAll('.cl').forEach(cl=>{
+    const n=parseInt(cl.getAttribute('data-line'),10);
+    cl.classList.toggle('on', lines.includes(n));
+  });
+}
+
+/* render a code panel from an array of {n, text, line} */
+function renderCode(codeEl, title, lines){
+  codeEl.innerHTML='';
+  codeEl.appendChild(titleBar(title));
+  lines.forEach(L=>{
+    const cl=el('div','cl', L.t);
+    cl.setAttribute('data-n', L.n!=null?L.n:'');
+    if(L.line!=null) cl.setAttribute('data-line', L.line);
+    codeEl.appendChild(cl);
+  });
+  enhanceCode(codeEl);
+  syncCodeToggles();
+}
+
+/* ============================================================
+   Stepper widget
+   ============================================================ */
+function buildStepper(vizEl, codeEl, frames, opts){
+  opts=opts||{};
+  vizEl.innerHTML='';
+  const stage=el('div','stage');
+  const pad=el('div','pad');
+  stage.appendChild(pad);
+  const caption=el('div','caption');
+  const progress=el('div','progress'); const fill=el('div','fill'); progress.appendChild(fill);
+  const controls=el('div','controls');
+  const bPrev=el('button','btn','‹ Prev');
+  const bNext=el('button','btn primary','Next ›');
+  const bPlay=el('button','btn','▶ Play');
+  const bReset=el('button','btn','↺ Reset');
+  const count=el('span','stepcount');
+  controls.append(bPrev,bNext,bPlay,bReset,count);
+  vizEl.append(stage, caption, progress, controls);
+
+  let idx=0, timer=null;
+  function draw(){
+    const f=frames[idx];
+    renderStage(pad, f);
+    if(codeEl) highlightCode(codeEl, f.line);
+    caption.innerHTML='';
+    caption.appendChild(el('span','num', (idx+1)));
+    caption.appendChild(el('span','captxt', f.caption||''));
+    if(f.verdict){
+      const v=el('span','verdict '+(f.verdict==='true'?'true':f.verdict==='false'?'false':'err'),
+        f.verdict==='true'?'returns true':f.verdict==='false'?'returns false':f.verdict);
+      caption.appendChild(v);
+    }
+    count.textContent='Step '+(idx+1)+' / '+frames.length;
+    fill.style.width=((idx+1)/frames.length*100)+'%';
+    bPrev.disabled=(idx===0);
+    bNext.disabled=(idx===frames.length-1);
+  }
+  function go(i){ idx=Math.max(0,Math.min(frames.length-1,i)); draw(); }
+  function stop(){ if(timer){clearInterval(timer); timer=null; bPlay.textContent='▶ Play';} }
+  bPrev.onclick=()=>{stop(); go(idx-1);};
+  bNext.onclick=()=>{stop(); go(idx+1);};
+  bReset.onclick=()=>{stop(); go(0);};
+  bPlay.onclick=()=>{
+    if(timer){stop(); return;}
+    if(idx===frames.length-1) idx=0;
+    bPlay.textContent='❚❚ Pause';
+    timer=setInterval(()=>{
+      if(idx>=frames.length-1){stop(); return;}
+      go(idx+1);
+    }, 1300);
+    draw();
+  };
+  draw();
+  return {go, stop, destroy:stop};
+}
+
+/* small helper to clone frame data */
+const C = x => JSON.parse(JSON.stringify(x));
+
+/* ============================================================
+   HERO ambient demo
+   ============================================================ */
+(function(){
+  const host=document.getElementById('heroDemo');
+  const row={ nodes:[
+    {e:7, link:'arrow'}, {e:12, link:'arrow'}, {e:5, link:'null'}
+  ], pointers:[{i:0,name:'head'}] };
+  const block=renderRow(row);
+  host.appendChild(block);
+  // add ambient pulses to each arrow line
+  block.querySelectorAll('.arrow .ln').forEach((ln,k)=>{
+    const p=el('span','pulse'); p.style.animationDelay=(k*0.6)+'s'; ln.appendChild(p);
+  });
+})();
+
+/* ============================================================
+   NODE BASICS stepper
+   ============================================================ */
+(function(){
+  const codeEl=document.getElementById('basics-code');
+  renderCode(codeEl,'1 · the class   →   2 · the objects   →   3 · the wires',[
+    {n:1, line:1, t:'<span class="kw">class</span> Node {                <span class="cm">// 1) the blueprint</span>'},
+    {n:2, line:2, t:'    Object elem;            <span class="cm">// a value (anything)</span>'},
+    {n:3, line:3, t:'    Node   next;            <span class="cm">// a wire to another Node</span>'},
+    {n:4, line:4, t:'}'},
+    {n:5, line:5, t:''},
+    {n:6, line:6, t:'Node n1 = <span class="kw">new</span> Node(7);     <span class="cm">// 2) make objects</span>'},
+    {n:7, line:7, t:'Node n2 = <span class="kw">new</span> Node(12);'},
+    {n:8, line:8, t:'n1.next = n2;             <span class="cm">// 3) connect them</span>'},
+    {n:9, line:9, t:'Node n3 = <span class="kw">new</span> Node(5);'},
+    {n:10, line:10, t:'n2.next = n3;             <span class="cm">// connect again</span>'},
+    {n:11, line:11, t:'Node head = n1;           <span class="cm">// remember the front</span>'}
+  ]);
+  const frames=[
+    {line:[1,2,3,4], caption:'Step 1 — the class. Node is a blueprint, not a usable node yet. It declares two compartments: elem (a value) and next (a wire that may point to another Node).',
+     rows:[{label:'class Node — blueprint only', nodes:[{e:'elem', nx:'next', t:'dummy', link:'none'}]}]},
+    {line:6, caption:'Step 2 — make an object. new Node(7) stamps out a real box in memory following the blueprint: elem = 7, next = null. We name this object n1.',
+     rows:[{nodes:[{e:7,t:'new',link:'none'}], pointers:[{i:0,name:'p',label:'n1'}]}]},
+    {line:7, caption:'Make a second object, n2, holding 12. Two separate boxes exist now — still no wire between them.',
+     rows:[{nodes:[{e:7,link:'none'},{e:12,t:'new',link:'null'}], pointers:[{i:0,name:'p',label:'n1'},{i:1,name:'p',label:'n2'}]}]},
+    {line:8, caption:'Step 3 — connect. n1.next = n2 sets n1\u2019s wire to point at n2. That single assignment is the whole connection: n1 → n2.',
+     rows:[{nodes:[{e:7,hl:true,link:'arrow'},{e:12,link:'null'}], pointers:[{i:0,name:'p',label:'n1'},{i:1,name:'p',label:'n2'}]}]},
+    {line:9, caption:'Make a third object n3 holding 5, on its own for the moment.',
+     rows:[{nodes:[{e:7,link:'arrow'},{e:12,link:'none'}], pointers:[{i:0,name:'p',label:'n1'},{i:1,name:'p',label:'n2'}]},{label:'new object',nodes:[{e:5,t:'new',link:'null'}]}]},
+    {line:10, caption:'n2.next = n3 wires the second object to the third. Three connected objects make one linked list.',
+     rows:[{nodes:[{e:7,link:'arrow'},{e:12,hl:true,link:'arrow'},{e:5,link:'null'}], pointers:[{i:0,name:'p',label:'n1'},{i:1,name:'p',label:'n2'},{i:2,name:'p',label:'n3'}]}]},
+    {line:11, caption:'head remembers the first object. From head, following next reaches every value: 7 → 12 → 5 → null.',
+     rows:[{nodes:[{e:7,link:'arrow'},{e:12,link:'arrow'},{e:5,link:'null'}], pointers:[{i:0,name:'head'}]}]}
+  ];
+  buildStepper(document.getElementById('basics-viz'), codeEl, frames);
+})();
+
+/* ============================================================
+   INTRO TRACE TASK (5-node SVG diagram + statement stepper)
+   ============================================================ */
+(function(){
+  // static SVG wiring diagram
+  const svg = `
+  <svg viewBox="0 0 640 360" width="640" height="360" style="max-width:100%;font-family:var(--mono);">
+    <defs>
+      <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <path d="M0,0 L9,4.5 L0,9 z" fill="#2b6cf6"/>
+      </marker>
+    </defs>
+    <!-- wires -->
+    <path d="M520,180 C520,40 110,30 90,150" fill="none" stroke="#2b6cf6" stroke-width="3" marker-end="url(#ah)"/>
+    <path d="M118,170 C200,120 235,105 270,92" fill="none" stroke="#2b6cf6" stroke-width="3" marker-end="url(#ah)"/>
+    <path d="M300,108 C300,135 300,150 300,168" fill="none" stroke="#2b6cf6" stroke-width="3" marker-end="url(#ah)"/>
+    <path d="M340,200 C400,200 430,200 488,200" fill="none" stroke="#2b6cf6" stroke-width="3" marker-end="url(#ah)"/>
+    <path d="M285,318 C200,300 150,250 108,205" fill="none" stroke="#2b6cf6" stroke-width="3" marker-end="url(#ah)"/>
+    <!-- nodes -->
+    ${nodeSvg(90,180,'Java','n5')}
+    ${nodeSvg(300,80,'324','n2')}
+    ${nodeSvg(300,200,'8.97','n3')}
+    ${nodeSvg(520,200,'Hello','n1')}
+    ${nodeSvg(300,320,'Python','n4')}
+  </svg>`;
+  function nodeSvg(x,y,val,name){
+    return `<g>
+      <circle cx="${x}" cy="${y}" r="34" fill="#fff1dd" stroke="#16202c" stroke-width="2.5"/>
+      <text x="${x}" y="${y+5}" text-anchor="middle" font-size="14" font-weight="700" fill="#9a4d05">${val}</text>
+      <text x="${x}" y="${y+52}" text-anchor="middle" font-size="13" font-weight="700" fill="#16202c">${name}</text>
+    </g>`;
+  }
+  document.getElementById('introDiagram').innerHTML=svg;
+
+  const codeEl=document.getElementById('intro-code');
+  renderCode(codeEl,'The statements to run',[
+    {n:1, line:1, t:'println( n1.next );'},
+    {n:2, line:2, t:'println( n3.next.elem );'},
+    {n:3, line:3, t:'Node x = n4.next;'},
+    {n:4, line:3, t:'println( n1.elem + x.elem );'},
+    {n:5, line:5, t:'x.next = n3;'},
+    {n:6, line:5, t:'println( n2.next.next + n5.next );'},
+    {n:7, line:7, t:'x.next.next = null;'},
+    {n:8, line:8, t:'n3.next.elem = 321;'},
+    {n:9, line:9, t:'n4.next = 532;'},
+    {n:10, line:9, t:'println( n4.next.elem );'}
+  ]);
+  // render single circle-ish chain snapshots is hard; use captions + a tiny inline result row
+  function row(vals, hl){
+    return {nodes: vals.map((v,i)=>({e:v, link:(i<vals.length-1?'arrow':'null'), hl: hl&&hl.includes(i)}))};
+  }
+  const frames=[
+    {line:1, caption:'n1.next is the node n5 (the "Java" node). Printing a Node prints its memory reference, e.g. Node@1b6d3586 — NOT its contents.',
+     rows:[{label:'prints', nodes:[{e:'Node@1b6d…',t:'dummy',link:'null'}]}], verdict:'reference'},
+    {line:2, caption:'Follow n3.next (which is n1) then read .elem → "Hello". Two hops, then the value.',
+     rows:[{label:'prints', nodes:[{e:'Hello',link:'null'}]}], verdict:'Hello'},
+    {line:3, caption:'x = n4.next, so x now refers to the "Java" node (n5). Then "Hello" + "Java" is String concatenation.',
+     rows:[{label:'prints', nodes:[{e:'HelloJava',link:'null'}]}], verdict:'HelloJava'},
+    {line:5, caption:'x.next = n3 rewires n5 so it now points to n3 instead of n2. (This quietly changes the structure for later lines.)',
+     rows:[{label:'after rewire', nodes:[{e:'n5',link:'arrow'},{e:'n3',t:'new',link:'null'}]}]},
+    {line:5, caption:'n2.next.next is a Node and n5.next is a Node. Java has no "+" for two Node objects → this line does not compile.',
+     rows:[{label:'Node + Node', nodes:[{e:'Node',link:'none'},{e:'Node',link:'null'}]}], verdict:'compile error'},
+    {line:7, caption:'x.next.next = null means n5 → n3 → (its next). It sets n3.next to null, cutting n3 off from the loop.',
+     rows:[{label:'n3.next becomes', nodes:[{e:'n3',link:'null'}]}]},
+    {line:8, caption:'n3.next is now null, so reading n3.next.elem dereferences null at runtime.',
+     rows:[{label:'runtime', nodes:[{e:'null . elem',t:'dim',link:'null'}]}], verdict:'NullPointerException'},
+    {line:9, caption:'n4.next is declared as type Node, but 532 is an int. Java refuses to assign an int to a Node field → compile error. (In Python this line would simply run.)',
+     rows:[{label:'n4.next = 532', nodes:[{e:'int → Node',t:'dim',link:'null'}]}], verdict:'compile error'},
+    {line:9, caption:'Because line 9 fails to compile in Java, this print never runs. In Python, n4.next would be 532 and 532.elem would raise AttributeError — the same idea, a different error.',
+     rows:[{label:'unreachable in Java', nodes:[{e:'—',t:'dim',link:'null'}]}], verdict:'does not run'}
+  ];
+  buildStepper(document.getElementById('intro-viz'), codeEl, frames);
+})();
+
+/* ============================================================
+   LIST METHODS (selector + per-method stepper)
+   ============================================================ */
+(function(){
+  const codeEl=document.getElementById('methods-code');
+  const vizEl=document.getElementById('methods-viz');
+  const selEl=document.getElementById('methodSel');
+
+  const base=[10,20,30]; // working list
+  function L(vals, hl, ptrs){
+    return {nodes: vals.map((v,i)=>({e:v, link:(i<vals.length-1?'arrow':'null'), hl: hl&&hl.includes(i)})), pointers: ptrs||[]};
+  }
+
+  const methods={
+    append:{
+      title:'append(value) — add to the back',
+      code:[
+        {n:1,line:1,t:'<span class="fn">append</span>(value):'},
+        {n:2,line:2,t:'    newNode = <span class="kw">new</span> Node(value)'},
+        {n:3,line:3,t:'    <span class="kw">if</span> head == null:'},
+        {n:4,line:4,t:'        head = newNode; <span class="kw">return</span>'},
+        {n:5,line:5,t:'    temp = head'},
+        {n:6,line:6,t:'    <span class="kw">while</span> temp.next != null:'},
+        {n:7,line:7,t:'        temp = temp.next'},
+        {n:8,line:8,t:'    temp.next = newNode'}
+      ],
+      frames:[
+        {line:2, caption:'Make the node to add (value 40). It starts detached, with next = null.',
+         rows:[L(base,null,[{i:0,name:'head'}]), {label:'new node', nodes:[{e:40,t:'new',link:'null'}]}]},
+        {line:[3,5], caption:'head is not null, so 40 will not become the new head. Start temp at head to walk to the tail.',
+         rows:[L(base,[0],[{i:0,name:'head'},{i:0,name:'temp'}]), {label:'new node', nodes:[{e:40,t:'new',link:'null'}]}]},
+        {line:[6,7], caption:'temp.next (20) is not null, so move temp forward.',
+         rows:[L(base,[1],[{i:0,name:'head'},{i:1,name:'temp'}]), {label:'new node', nodes:[{e:40,t:'new',link:'null'}]}]},
+        {line:6, caption:'temp now sits on 30 and temp.next is null — temp is the last node. Stop walking.',
+         rows:[L(base,[2],[{i:0,name:'head'},{i:2,name:'temp'}]), {label:'new node', nodes:[{e:40,t:'new',link:'null'}]}]},
+        {line:8, caption:'temp.next = newNode. 40 is wired onto the tail. The list is now 10 → 20 → 30 → 40.',
+         rows:[L([10,20,30,40],[2,3],[{i:0,name:'head'},{i:2,name:'temp'}])]}
+      ]
+    },
+    printList:{
+      title:'printList() — visit every value',
+      code:[
+        {n:1,line:1,t:'<span class="fn">printList</span>():'},
+        {n:2,line:2,t:'    temp = head'},
+        {n:3,line:3,t:'    <span class="kw">while</span> temp != null:'},
+        {n:4,line:4,t:'        print temp.elem'},
+        {n:5,line:5,t:'        temp = temp.next'}
+      ],
+      frames:[
+        {line:2, caption:'temp starts at head. We loop while temp != null so we land on every node, including the last.',
+         rows:[L(base,[0],[{i:0,name:'temp'}])]},
+        {line:[4,5], caption:'Print 10, then move temp forward. Output so far: 10',
+         rows:[L(base,[0],[{i:0,name:'temp'}])]},
+        {line:[4,5], caption:'Print 20, move on. Output so far: 10 20',
+         rows:[L(base,[1],[{i:1,name:'temp'}])]},
+        {line:[4,5], caption:'Print 30, move on. Output so far: 10 20 30',
+         rows:[L(base,[2],[{i:2,name:'temp'}])]},
+        {line:3, caption:'temp is now null — the loop condition fails and we stop. Full output: 10 20 30',
+         rows:[L(base,null,[])]}
+      ]
+    },
+    prepend:{
+      title:'prepend(value) — add to the front',
+      code:[
+        {n:1,line:1,t:'<span class="fn">prepend</span>(value):'},
+        {n:2,line:2,t:'    newNode = <span class="kw">new</span> Node(value)'},
+        {n:3,line:3,t:'    newNode.next = head'},
+        {n:4,line:4,t:'    head = newNode'}
+      ],
+      frames:[
+        {line:2, caption:'Make the new node (value 5). It will go in front of everything.',
+         rows:[L(base,null,[{i:0,name:'head'}]), {label:'new node', nodes:[{e:5,t:'new',link:'null'}]}]},
+        {line:3, caption:'newNode.next = head wires 5 onto the old front node 10. But head still points at 10 for now.',
+         rows:[{nodes:[{e:5,t:'new',hl:true,link:'arrow'},{e:10,link:'arrow'},{e:20,link:'arrow'},{e:30,link:'null'}], pointers:[{i:1,name:'head'},{i:0,name:'newNode'}]}]},
+        {line:4, caption:'head = newNode moves the entry point to 5. The list is now 5 → 10 → 20 → 30.',
+         rows:[{nodes:[{e:5,t:'new',hl:true,link:'arrow'},{e:10,link:'arrow'},{e:20,link:'arrow'},{e:30,link:'null'}], pointers:[{i:0,name:'head'}]}]}
+      ]
+    },
+    nodeAt:{
+      title:'nodeAt(index) — return the node at a position',
+      code:[
+        {n:1,line:1,t:'<span class="fn">nodeAt</span>(index):'},
+        {n:2,line:2,t:'    <span class="kw">if</span> index &lt; 0: <span class="kw">return</span> null'},
+        {n:3,line:3,t:'    temp = head; count = 0'},
+        {n:4,line:4,t:'    <span class="kw">while</span> temp != null:'},
+        {n:5,line:5,t:'        <span class="kw">if</span> count == index: <span class="kw">return</span> temp'},
+        {n:6,line:6,t:'        temp = temp.next; count = count + 1'},
+        {n:7,line:7,t:'    <span class="kw">return</span> null   <span class="cm">// index too large</span>'}
+      ],
+      frames:[
+        {line:3, caption:'Goal: nodeAt(1). Start temp at head with count = 0.',
+         rows:[L(base,[0],[{i:0,name:'temp', label:'temp · count 0'}])]},
+        {line:5, caption:'count (0) is not the target index (1). Do not return yet.',
+         rows:[L(base,[0],[{i:0,name:'temp', label:'temp · count 0'}])]},
+        {line:6, caption:'Move temp forward and bump count to 1.',
+         rows:[L(base,[1],[{i:1,name:'temp', label:'temp · count 1'}])]},
+        {line:5, caption:'count (1) matches index (1) — return this node (the one holding 20). No printing happens inside nodeAt.',
+         rows:[L(base,[1],[{i:1,name:'temp', label:'return this'}])]}
+      ]
+    },
+    removeFirst:{
+      title:'removeFirst() — drop the front node',
+      code:[
+        {n:1,line:1,t:'<span class="fn">removeFirst</span>():'},
+        {n:2,line:2,t:'    <span class="kw">if</span> head == null: <span class="kw">return</span>'},
+        {n:3,line:3,t:'    head = head.next'}
+      ],
+      frames:[
+        {line:2, caption:'head is not null, so there is something to remove.',
+         rows:[L(base,[0],[{i:0,name:'head'}])]},
+        {line:3, caption:'head = head.next moves the entry point from 10 to 20.',
+         rows:[{nodes:[{e:10,t:'dim',link:'arrow'},{e:20,hl:true,link:'arrow'},{e:30,link:'null'}], pointers:[{i:1,name:'head'}]}]},
+        {line:3, caption:'Nothing points at 10 anymore, so it is garbage-collected. The list is now 20 → 30.',
+         rows:[L([20,30],[0],[{i:0,name:'head'}])]}
+      ]
+    },
+    removeLast:{
+      title:'removeLast() — drop the tail node',
+      code:[
+        {n:1,line:1,t:'<span class="fn">removeLast</span>():'},
+        {n:2,line:2,t:'    <span class="kw">if</span> head == null: <span class="kw">return</span>'},
+        {n:3,line:3,t:'    <span class="kw">if</span> head.next == null:        <span class="cm">// only one node</span>'},
+        {n:4,line:4,t:'        head = null; <span class="kw">return</span>'},
+        {n:5,line:5,t:'    temp = head'},
+        {n:6,line:6,t:'    <span class="kw">while</span> temp.next.next != null:'},
+        {n:7,line:7,t:'        temp = temp.next'},
+        {n:8,line:8,t:'    temp.next = null'}
+      ],
+      frames:[
+        {line:[3,5], caption:'More than one node exists, so we need the SECOND-to-last node. Start temp at head.',
+         rows:[L(base,[0],[{i:0,name:'temp'}])]},
+        {line:[6,7], caption:'temp.next.next is 30 (not null), so temp may advance. Move temp to 20.',
+         rows:[L(base,[1],[{i:1,name:'temp'}])]},
+        {line:6, caption:'Now temp is on 20 and temp.next.next is null (30 has no next) — temp is the second-to-last node. Stop.',
+         rows:[L(base,[1],[{i:1,name:'temp'}])]},
+        {line:8, caption:'temp.next = null cuts 30 loose. The list becomes 10 → 20.',
+         rows:[L([10,20],[1],[{i:1,name:'temp'}])]}
+      ]
+    }
+  };
+
+  const order=['append','printList','prepend','nodeAt','removeFirst','removeLast'];
+  let current=null;
+  function mount(key){
+    current=key;
+    selEl.querySelectorAll('button').forEach(b=> b.classList.toggle('active', b.dataset.k===key));
+    const m=methods[key];
+    renderCode(codeEl, m.title, m.code);
+    buildStepper(vizEl, codeEl, C(m.frames));
+  }
+  order.forEach(k=>{
+    const b=el('button',null, k+'()');
+    b.dataset.k=k; b.onclick=()=>mount(k);
+    selEl.appendChild(b);
+  });
+  mount('append');
+})();
+
+/* ============================================================
+   TASK 1 — CONGA LINE
+   ============================================================ */
+(function(){
+  const codeEl=document.getElementById('conga-code');
+  renderCode(codeEl,'isSorted(head) — single pass',[
+    {n:1,line:1,t:'<span class="fn">isSorted</span>(head):'},
+    {n:2,line:2,t:'    <span class="kw">if</span> head == null <span class="kw">or</span> head.next == null:'},
+    {n:3,line:3,t:'        <span class="kw">return</span> true     <span class="cm">// 0 or 1 dancer is fine</span>'},
+    {n:4,line:4,t:'    cur = head'},
+    {n:5,line:5,t:'    <span class="kw">while</span> cur.next != null:'},
+    {n:6,line:6,t:'        <span class="kw">if</span> (int)cur.elem &gt; (int)cur.next.elem:'},
+    {n:7,line:7,t:'            <span class="kw">return</span> false  <span class="cm">// older stands in front</span>'},
+    {n:8,line:8,t:'        cur = cur.next'},
+    {n:9,line:9,t:'    <span class="kw">return</span> true'}
+  ]);
+
+  function congaFrames(vals){
+    const baseNodes=vals.map((v,i)=>({e:v, link:(i<vals.length-1?'arrow':'null')}));
+    const frames=[];
+    frames.push({line:4, caption:'A '+vals.length+'-dancer line. Start cur at the head and check every neighbouring pair stays non-decreasing.',
+      rows:[{label:'conga line', nodes:C(baseNodes), pointers:[{i:0,name:'cur'}]}]});
+    for(let i=0;i<vals.length-1;i++){
+      const nodes=C(baseNodes); nodes[i].hl=true; nodes[i+1].hl=true;
+      const ok=Number(vals[i])<=Number(vals[i+1]);
+      frames.push({
+        line: ok?[6,8]:[6,7],
+        caption: ok
+          ? 'Compare '+vals[i]+' \u2264 '+vals[i+1]+' \u2713 — order holds. Move cur forward.'
+          : 'Compare '+vals[i]+' > '+vals[i+1]+' \u2717 — a younger dancer stands behind an older one. Return false right away.',
+        verdict: ok?null:'false',
+        rows:[{label:'conga line', nodes, pointers:[{i:i,name:'cur'}]}]
+      });
+      if(!ok) return frames;
+    }
+    frames.push({line:9, caption:'cur reached the last dancer and no pair broke the order. Everyone is arranged correctly — return true.',
+      verdict:'true',
+      rows:[{label:'conga line', nodes:C(baseNodes), pointers:[{i:vals.length-1,name:'cur'}]}]});
+    return frames;
+  }
+
+  const cases={
+    A:{label:'Case 1 · sorted → true', vals:[10,15,34,41,56,72]},
+    B:{label:'Case 2 · broken → false', vals:[10,15,44,41,56,72]}
+  };
+  const selEl=document.getElementById('congaSel');
+  const vizEl=document.getElementById('conga-viz');
+  function mount(k){
+    selEl.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b.dataset.k===k));
+    buildStepper(vizEl, codeEl, congaFrames(cases[k].vals));
+  }
+  Object.keys(cases).forEach(k=>{
+    const b=el('button',null,cases[k].label); b.dataset.k=k; b.onclick=()=>mount(k); selEl.appendChild(b);
+  });
+  mount('A');
+})();
+
+/* ============================================================
+   TASK 2 — WORD DECODER
+   ============================================================ */
+(function(){
+  const codeEl=document.getElementById('decoder-code');
+  renderCode(codeEl,'wordDecoder(head) — keep, copy, reverse',[
+    {n:1,line:1,t:'<span class="fn">wordDecoder</span>(head):'},
+    {n:2,line:2,t:'    n = length(head)'},
+    {n:3,line:3,t:'    step = 13 % n'},
+    {n:4,line:4,t:'    dummy = <span class="kw">new</span> Node(null)     <span class="cm">// dummy head</span>'},
+    {n:5,line:5,t:'    cur = head;  pos = 0'},
+    {n:6,line:6,t:'    <span class="kw">while</span> cur != null:'},
+    {n:7,line:7,t:'        <span class="kw">if</span> pos != 0 <span class="kw">and</span> pos % step == 0:'},
+    {n:8,line:8,t:'            newNode = <span class="kw">new</span> Node(cur.elem)'},
+    {n:9,line:9,t:'            newNode.next = dummy.next'},
+    {n:10,line:10,t:'            dummy.next = newNode   <span class="cm">// front-insert = reverse</span>'},
+    {n:11,line:11,t:'        pos = pos + 1'},
+    {n:12,line:12,t:'        cur = cur.next'},
+    {n:13,line:13,t:'    <span class="kw">return</span> dummy'}
+  ]);
+
+  function decoderFrames(chars){
+    const n=chars.length;
+    const step=13%n;
+    const top=chars.map((c,i)=>({e:c, link:(i<n-1?'arrow':'null'), sub:i}));
+    let decoded=[];
+    function bottomRow(){
+      const nodes=[{e:'null', t:'dummy', link:(decoded.length?'arrow':'null')}];
+      decoded.forEach((c,i)=> nodes.push({e:c, t:'new', link:(i<decoded.length-1?'arrow':'null')}));
+      return {label:'decoded (dummy head + kept letters)', nodes};
+    }
+    const frames=[];
+    frames.push({
+      line:[2,3,4,5],
+      caption:'Length n = '+n+', so step = 13 % '+n+' = '+step+'. Make a dummy head (elem = null). We keep letters whose position is a non-zero multiple of '+step+', and push each to the front of the dummy list.',
+      rows:[{label:'encoded', nodes:C(top)}, bottomRow()]
+    });
+    for(let pos=0; pos<n; pos++){
+      const topN=C(top); topN[pos].hl=true;
+      const keeper=(pos!==0 && step!==0 && pos%step===0);
+      if(keeper) decoded.unshift(chars[pos]);
+      const bot=bottomRow();
+      if(keeper && bot.nodes[1]) bot.nodes[1].hl=true;
+      frames.push({
+        line: keeper?[7,8,9,10]:[7,11,12],
+        caption: keeper
+          ? 'pos '+pos+': '+pos+' % '+step+' == 0 → keep \u2018'+chars[pos]+'\u2019. Insert it right after the dummy head. Decoded so far: '+decoded.join(' \u2192 ')+'.'
+          : 'pos '+pos+': \u2018'+chars[pos]+'\u2019 is not a keeper ('+pos+' % '+step+' \u2260 0). Skip it and move cur forward.',
+        rows:[{label:'encoded', nodes:topN, pointers:[{i:pos,name:'cur'}]}, bot]
+      });
+    }
+    frames.push({
+      line:13,
+      caption:'Done. Return the dummy head. The decoded word reads: null \u2192 '+decoded.join(' \u2192 ')+'.',
+      verdict:'true',
+      rows:[{label:'encoded', nodes:C(top)}, bottomRow()]
+    });
+    return frames;
+  }
+
+  const cases={
+    A:{label:'Case 1 · CAT', chars:['B','M','D','T','N','O','A','P','S','C']},
+    B:{label:'Case 2 · N', chars:['Z','O','T','N','X']}
+  };
+  const selEl=document.getElementById('decoderSel');
+  const vizEl=document.getElementById('decoder-viz');
+  function mount(k){
+    selEl.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b.dataset.k===k));
+    buildStepper(vizEl, codeEl, decoderFrames(cases[k].chars));
+  }
+  Object.keys(cases).forEach(k=>{
+    const b=el('button',null,cases[k].label); b.dataset.k=k; b.onclick=()=>mount(k); selEl.appendChild(b);
+  });
+  mount('A');
+})();
+
+/* ============================================================
+   NAV active-state on scroll
+   ============================================================ */
+(function(){
+  const links=[...document.querySelectorAll('#nav a')];
+  const map={};
+  links.forEach(a=> map[a.getAttribute('href').slice(1)]=a);
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        links.forEach(l=>l.classList.remove('active'));
+        if(map[e.target.id]) map[e.target.id].classList.add('active');
+      }
+    });
+  },{rootMargin:'-45% 0px -50% 0px', threshold:0});
+  document.querySelectorAll('section[id]').forEach(s=>obs.observe(s));
+})();
+
+/* ---- init: enhance any static code blocks + set toggle labels ---- */
+(function(){
+  document.querySelectorAll('.code').forEach(enhanceCode);
+  syncCodeToggles();
+})();
+</script>
+</body>
+</html>
