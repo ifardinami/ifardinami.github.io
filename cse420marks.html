@@ -967,6 +967,14 @@ sheets: {
     }
 
     function computeCategoryScore(dataset, row, categoryKey){
+
+      if (categoryKey === "final") {
+  // Column H = index 7 when range begins at A
+  const value = row[7];
+
+  return isLikelyNumeric(value) ? Number(value) : NaN;
+}
+
       // If there is an obvious total column, use it; otherwise sum numerics.
       const headersLower = dataset.headers.map(h => safeText(h).toLowerCase());
 
@@ -1328,7 +1336,7 @@ const preferMap = {
       // For other categories: compute a score and show all row fields (excluding blank)
       const score = computeCategoryScore(ds, row, categoryKey);
       bigValue = Number.isFinite(score) ? score.toFixed(2).replace(/\.00$/,"") : "—";
-      bigCaption = categoryKey === "final" ? "Final Exam (25%)" : (cat?.label || "Marks");
+      bigCaption = categoryKey === "final" ? "Final Exam (35%)" : (cat?.label || "Marks");
 
       // Build tiles: show the most important-looking columns first
       const tiles = [];
